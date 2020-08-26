@@ -1,6 +1,6 @@
 -
   name: 'Refactory OAuth - Povider Index route'
-  uriPattern: ''
+  uriPattern: 'providers'
   defaults:
     '@package':    'Refactory.OAuth'
     '@controller': 'Provider'
