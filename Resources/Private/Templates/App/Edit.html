@@ -1,0 +1,26 @@
+<f:layout name="Default"/>
+
+<f:section name="Title">Edit app "{app.name}"</f:section>
+
+<f:section name="Content">
+    <f:render partial="FormErrors" arguments="{for: 'app'}" />
+
+    <f:form action="update" object="{app}" objectName="app">
+        <label for="name">Name</label>
+        <f:form.textfield property="name" id="name"/>
+        <label for="clientId">Client id</label>
+        <f:form.textfield property="clientId" id="clientId"/>
+        <label for="secret">Secret</label>
+        <f:form.textfield property="secret" id="secret"/>
+        <label for="scope">Scope</label>
+        <f:form.textfield property="scope" id="scope"/>
+        <label for="provider">Provider</label>
+        <f:form.select property="provider" id="provider" options="{providers}" optionLabelField="name"
+                       prependOptionLabel="Select a provider"/>
+        <label for="apiUri">Api base url</label>
+        <f:form.textfield property="apiUri" id="apiUri"/>
+        <label for="notes.example">Example</label>
+        <f:form.textfield property="notes.example" id="notes.example" />
+        <f:form.submit value="Update"/>
+    </f:form>
+</f:section>

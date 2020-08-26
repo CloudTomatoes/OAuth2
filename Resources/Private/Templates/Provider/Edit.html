@@ -1,0 +1,18 @@
+<f:layout name="Default"/>
+
+<f:section name="Title">Edit provider "{provider.name}"</f:section>
+
+<f:section name="Content">
+    <f:render partial="FormErrors" arguments="{for: 'provider'}" />
+
+    <f:form action="update" object="{provider}" objectName="provider">
+        <label for="name">Name</label>
+        <f:form.textfield property="name" id="name"/>
+        <label for="authenticationEndpoint">Authentication endpoint</label>
+        <f:form.textfield property="authenticationEndpoint" id="authenticationEndpoint"/>
+        <label for="oauthClient">Name</label>
+        <f:form.select property="oauthClient" id="oauthClient" options="{oauthClients}"
+                       prependOptionLabel="Select a platform"/>
+        <f:form.submit value="Update"/>
+    </f:form>
+</f:section>

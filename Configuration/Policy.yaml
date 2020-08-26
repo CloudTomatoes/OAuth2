@@ -1,0 +1,16 @@
+#
+# Security policy for Flownative.OAuth2.Client
+#
+
+#
+# ROLES
+#
+roles:
+
+#  'Refactory.OAuth':
+
+  'Neos.Flow:Everybody':
+    privileges:
+    -
+      privilegeTarget: 'Flownative.OAuth2.Client:OAuth.Admin'
+      permission: GRANT

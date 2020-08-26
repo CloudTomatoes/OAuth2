@@ -1,0 +1,18 @@
+{
+    "description": "",
+    "type": "neos-package",
+    "name": "refactory/oauth",
+    "require": {
+        "neos/flow": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Refactory\\OAuth\\": "Classes/"
+        }
+    },
+    "extra": {
+        "neos": {
+            "package-key": "Refactory.OAuth"
+        }
+    }
+}

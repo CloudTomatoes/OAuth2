@@ -1,0 +1,21 @@
+<f:layout name="Default" />
+
+<f:section name="Title">Show provider"{provider.name}"</f:section>
+
+<f:section name="Content">
+    <table>
+        <tr>
+            <th>Name</th>
+            <td>{provider.name}</td>
+        </tr>
+        <tr>
+            <th>Authentication endpoint</th>
+            <td>{provider.authenticationEndpoint}</td>
+        </tr>
+        <tr>
+            <th>Client</th>
+            <td>{provider.oauthClient}</td>
+        </tr>
+    </table>
+    <f:link.action action="index">Back</f:link.action>
+</f:section>

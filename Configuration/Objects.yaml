@@ -1,0 +1,27 @@
+Refactory\OAuth\OAuthClients\AbstractClient:
+  properties:
+    stateCache:
+      object:
+        factoryObjectName: Neos\Flow\Cache\CacheManager
+        factoryMethodName: getCache
+        arguments:
+          1:
+            value: Flownative_OAuth2_Client_State
+Refactory\OAuth\OAuthClients\GCPClient:
+  properties:
+    stateCache:
+      object:
+        factoryObjectName: Neos\Flow\Cache\CacheManager
+        factoryMethodName: getCache
+        arguments:
+          1:
+            value: Flownative_OAuth2_Client_State
+Refactory\OAuth\OAuthClients\AzureClient:
+  properties:
+    stateCache:
+      object:
+        factoryObjectName: Neos\Flow\Cache\CacheManager
+        factoryMethodName: getCache
+        arguments:
+          1:
+            value: Flownative_OAuth2_Client_State

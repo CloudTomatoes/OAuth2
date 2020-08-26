@@ -1,0 +1,13 @@
+Neos:
+  Flow:
+    mvc:
+      routes:
+        'Refactory.OAuth':
+          position: 'start'
+Flownative:
+  OAuth2:
+    Client:
+      services:
+        #GCP
+        - name: 'google-cloud-platform'
+          className: 'Refactory\OAuth\OAuthServices\GCPClient'

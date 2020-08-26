@@ -1,0 +1,82 @@
+<f:layout name="Default"/>
+
+<f:section name="Title">Show app "{app.name}"
+    <f:link.action action="index">Back</f:link.action>
+</f:section>
+
+<f:section name="Content">
+
+    <f:link.action action="edit" arguments="{app: app}">Edit</f:link.action>
+    <table>
+        <tr>
+            <th>Name</th>
+            <td>{app.name}</td>
+        </tr>
+
+        <tr>
+            <th>Client id</th>
+            <td>{app.clientId}</td>
+        </tr>
+
+        <tr>
+            <th>Secret</th>
+            <td>{app.secret}</td>
+        </tr>
+
+        <tr>
+            <th>Scope</th>
+            <td>{app.scope}</td>
+        </tr>
+
+        <tr>
+            <th>Provider</th>
+            <td>{app.provider.name}</td>
+        </tr>
+        <tr>
+            <th>Api base url</th>
+            <td>{app.apiUri}</td>
+        </tr>
+        <tr>
+            <th>Redirect uri</th>
+            <td>{redirectUri}</td>
+        </tr>
+        <tr>
+            <th>Status</th>
+            <td>
+                <f:if condition="{app.authorizationId}">
+                    <f:then>
+                        <p>Application authorized</p>
+                        <f:link.action action="deAuthorize" arguments="{app:app}">Disconnect</f:link.action>
+                        <f:link.action action="refreshAuthorization" arguments="{app:app}">Refresh token</f:link.action>
+                    </f:then>
+                    <f:else>
+                        <f:link.action action="authorize" arguments="{app:app}">Authorize application</f:link.action>
+                    </f:else>
+                </f:if>
+            </td>
+        </tr>
+    </table>
+    <hr/>
+    <f:if condition="{app.authorizationId}">
+        <h2>Send an authenticated request</h2>
+        <p><f:if condition="{app.notes.example}">Example:<pre><code class="language-text">{app.notes.example}</code></pre><br/></f:if>
+        Use a relative uri for your request. The api base url will be set automatically.</p>
+        <f:form action="sendAuthenticatedRequest">
+            <f:form.hidden name="app" value="{app}"/>
+            <label for="uri">Request uri</label>
+            <f:form.textfield name="uri" id="uri" value="{uri}"/>
+            <label for="method">Method (defaults to GET)</label>
+            <f:form.textfield name="method" id="method" value="{method}"/>
+            <label for="body">Request Body</label>
+            <f:form.textarea name="body" id="body"/>
+            <f:form.submit value="Send request"/>
+        </f:form>
+        <hr/>
+        <f:if condition="{queryResult}">
+            <f:then>
+                <pre><code class="language-json">{queryResult}</code></pre>
+            </f:then>
+            <f:else><i>Fill in the form above to create an authenticated request</i></f:else>
+        </f:if>
+    </f:if>
+</f:section>

@@ -1,0 +1,14 @@
+<f:validation.results for="{for}">
+    <f:if condition="{validationResults.flattenedErrors}">
+        <dl class="errors">
+            <f:for each="{validationResults.flattenedErrors}" key="propertyName" as="errors">
+                <dt>
+                    {propertyName}:
+                </dt>
+                <dd>
+                    <f:for each="{errors}" as="error">{error}</f:for>
+                </dd>
+            </f:for>
+        </dl>
+    </f:if>
+</f:validation.results>
