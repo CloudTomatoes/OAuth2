@@ -2,8 +2,15 @@
     "description": "",
     "type": "neos-package",
     "name": "refactory/oauth",
+    "repositories": [{
+        "type": "git",
+        "url": "git@github.com:hphoeksma/flow-oauth2-client.git"
+    }],
     "require": {
-        "neos/flow": "*"
+        "neos/flow": "*",
+        "flownative/oauth2-client": "dev-develop",
+        "league/oauth2-google": "^3.0",
+        "google/apiclient": "^2.6"
     },
     "autoload": {
         "psr-4": {
