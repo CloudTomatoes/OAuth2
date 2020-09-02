@@ -2,7 +2,7 @@ Neos:
   Flow:
     mvc:
       routes:
-        'Refactory.OAuth':
+        'CloudTomatoes.OAuth2':
           position: 'start'
 Flownative:
   OAuth2:
@@ -10,4 +10,4 @@ Flownative:
       services:
         #GCP
         - name: 'google-cloud-platform'
-          className: 'Refactory\OAuth\OAuthServices\GCPClient'
+          className: 'CloudTomatoes\OAuth2\OAuthServices\GCPClient'

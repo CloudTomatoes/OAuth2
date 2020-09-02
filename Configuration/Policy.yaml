@@ -7,7 +7,7 @@
 #
 roles:
 
-#  'Refactory.OAuth':
+#  'CloudTomatoes.OAuth2':
 
   'Neos.Flow:Everybody':
     privileges:

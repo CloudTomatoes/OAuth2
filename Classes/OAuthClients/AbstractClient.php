@@ -1,11 +1,11 @@
 <?php
-namespace Refactory\OAuth\OAuthClients;
+namespace CloudTomatoes\OAuth2\OAuthClients;
 
 use Flownative\OAuth2\Client\OAuthClient;
 use Neos\Flow\ObjectManagement\ObjectManagerInterface;
-use Refactory\OAuth\Domain\Model\App;
+use CloudTomatoes\OAuth2\Domain\Model\App;
 use Neos\Flow\Annotations as Flow;
-use Refactory\OAuth\Domain\Repository\ProviderRepository;
+use CloudTomatoes\OAuth2\Domain\Repository\ProviderRepository;
 
 abstract class AbstractClient extends OAuthClient
 {
@@ -53,7 +53,7 @@ abstract class AbstractClient extends OAuthClient
             $provider = $this->app->getProvider();
         } else {
             $providerRepository = $this->objectManager->get(ProviderRepository::class);
-            $provider = $providerRepository->findOneByOauthClient('Refactory\OAuth\OAuthClients\GCPClient');
+            $provider = $providerRepository->findOneByOauthClient('CloudTomatoes\OAuth2\OAuthClients\GCPClient');
         }
         return trim($provider->getAuthenticationEndpoint(), '/') . '/authorize';
     }
@@ -70,7 +70,7 @@ abstract class AbstractClient extends OAuthClient
             $provider = $this->app->getProvider();
         } else {
             $providerRepository = $this->objectManager->get(ProviderRepository::class);
-            $provider = $providerRepository->findOneByOauthClient('Refactory\OAuth\OAuthClients\AzureClient');
+            $provider = $providerRepository->findOneByOauthClient('CloudTomatoes\OAuth2\OAuthClients\AzureClient');
         }
         return trim($provider->getAuthenticationEndpoint(), '/') . '/token';
     }
@@ -87,7 +87,7 @@ abstract class AbstractClient extends OAuthClient
             $provider = $this->app->getProvider();
         } else {
             $providerRepository = $this->objectManager->get(ProviderRepository::class);
-            $provider = $providerRepository->findOneByOauthClient('Refactory\OAuth\OAuthClients\AzureClient');
+            $provider = $providerRepository->findOneByOauthClient('CloudTomatoes\OAuth2\OAuthClients\AzureClient');
         }
         return trim($provider->getAuthenticationEndpoint(), '/')  . '/token/resource';
     }

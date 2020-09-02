@@ -1,14 +1,14 @@
 <?php
-namespace Refactory\OAuth\Controller;
+namespace CloudTomatoes\OAuth2\Controller;
 
 /*
- * This file is part of the Refactory.OAuth package.
+ * This file is part of the CloudTomatoes.OAuth2 package.
  */
 
 use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Mvc\Controller\ActionController;
-use Refactory\OAuth\Domain\Model\Provider;
-use Refactory\OAuth\Domain\Repository\ProviderRepository;
+use CloudTomatoes\OAuth2\Domain\Model\Provider;
+use CloudTomatoes\OAuth2\Domain\Repository\ProviderRepository;
 
 class ProviderController extends AbstractController
 {

@@ -1,29 +1,34 @@
 <?php
 
-namespace Refactory\OAuth\Controller;
+namespace CloudTomatoes\OAuth2\Controller;
 
 /*
- * This file is part of the Refactory.OAuth package.
+ * This file is part of the CloudTomatoes.OAuth2 package.
  */
 
-use Flownative\OAuth2\Client\Authorization;
 use Flownative\OAuth2\Client\OAuthClient;
-use GuzzleHttp\Promise\Promise;
+use Flownative\OAuth2\Client\OAuthClientException;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Uri;
 use Neos\Flow\Annotations as Flow;
-use Neos\Flow\Mvc\Controller\ActionController;
+use Neos\Flow\Http\Exception;
+use Neos\Flow\Mvc\Exception\NoSuchArgumentException;
 use Neos\Flow\Mvc\Exception\StopActionException;
-use Refactory\OAuth\Domain\Model\App;
-use Refactory\OAuth\Domain\Repository\ProviderRepository;
-use Refactory\OAuth\OAuthClients\GCPClient;
-use Refactory\OAuth\Service\AuthorizationService;
+use Neos\Flow\Mvc\Exception\UnsupportedRequestTypeException;
+use Neos\Flow\Mvc\Routing\Exception\MissingActionNameException;
+use Neos\Flow\Persistence\Exception\IllegalObjectTypeException;
+use CloudTomatoes\OAuth2\Domain\Model\App;
+use CloudTomatoes\OAuth2\Domain\Repository\AppRepository;
+use CloudTomatoes\OAuth2\Domain\Repository\ProviderRepository;
+use CloudTomatoes\OAuth2\OAuthClients\GCPClient;
+use CloudTomatoes\OAuth2\Service\AuthorizationService;
 
 class AppController extends AbstractController
 {
 
     /**
      * @Flow\Inject
-     * @var \Refactory\OAuth\Domain\Repository\AppRepository
+     * @var AppRepository
      */
     protected $appRepository;
 
@@ -55,7 +60,7 @@ class AppController extends AbstractController
      * @param string|null $method
      * @return void
      */
-    public function showAction(App $app, $queryResult = null, string $uri = null, string $method = null)
+    public function showAction(App $app, $queryResult = null, $uri = null, $method = null)
     {
         $clientClass = $app->getProvider()->getOauthClient();
         /** @var OAuthClient $client */
@@ -81,6 +86,8 @@ class AppController extends AbstractController
     /**
      * @param App $newApp
      * @return void
+     * @throws StopActionException
+     * @throws IllegalObjectTypeException
      */
     public function createAction(App $newApp)
     {
@@ -103,6 +110,8 @@ class AppController extends AbstractController
     /**
      * @param App $app
      * @return void
+     * @throws IllegalObjectTypeException
+     * @throws StopActionException
      */
     public function updateAction(App $app)
     {
@@ -113,9 +122,11 @@ class AppController extends AbstractController
 
     /**
      * @param App $app
+     * @throws Exception
      * @throws StopActionException
-     * @throws \Neos\Flow\Http\Exception
-     * @throws \Neos\Flow\Mvc\Routing\Exception\MissingActionNameException
+     * @throws OAuthClientException
+     * @throws UnsupportedRequestTypeException
+     * @throws MissingActionNameException
      */
     public function authorizeAction(App $app)
     {
@@ -127,14 +138,14 @@ class AppController extends AbstractController
         $clientClass = $app->getProvider()->getOauthClient();
         /** @var OAuthClient $client */
         $client = new $clientClass($app);
-        $returnUri = new Uri($this->uriBuilder->setCreateAbsoluteUri(true)->uriFor('finishAuthorization', ['app' => $app], 'App', 'Refactory.OAuth', null));
+        $returnUri = new Uri($this->uriBuilder->setCreateAbsoluteUri(true)->uriFor('finishAuthorization', ['app' => $app], 'App', 'CloudTomatoes.OAuth2', null));
         $this->redirectToUri($client->startAuthorization($app->getClientId(), $app->getSecret(), $returnUri, $app->getScope()));
     }
 
     /**
      * @param App $app
-     * @throws \Neos\Flow\Mvc\Exception\NoSuchArgumentException
-     * @throws \Neos\Flow\Persistence\Exception\IllegalObjectTypeException
+     * @throws NoSuchArgumentException
+     * @throws IllegalObjectTypeException|StopActionException
      */
     public function finishAuthorizationAction(App $app)
     {
@@ -152,6 +163,8 @@ class AppController extends AbstractController
      * @Flow\IgnoreValidation("$app")
      * @param App $app
      * @return void
+     * @throws IllegalObjectTypeException
+     * @throws StopActionException
      */
     public function deleteAction(App $app)
     {
@@ -164,6 +177,8 @@ class AppController extends AbstractController
 
     /**
      * @param App $app
+     * @throws IllegalObjectTypeException
+     * @throws StopActionException
      */
     public function deAuthorizeAction(App $app)
     {
@@ -180,12 +195,12 @@ class AppController extends AbstractController
      * @param string $method
      * @param array $body
      * @throws StopActionException
-     * @throws \Flownative\OAuth2\Client\OAuthClientException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws OAuthClientException
+     * @throws GuzzleException
      */
-    public function sendAuthenticatedRequestAction(App $app, string $uri, string $method = 'GET', array $body = [])
+    public function sendAuthenticatedRequestAction(App $app, $uri, $method = null, array $body = [])
     {
-        if ($method === '') $method = 'GET';
+        if ($method === '' || $method === null) $method = 'GET';
 
         $clientClass = $app->getProvider()->getOauthClient();
         /** @var GCPClient $client */
@@ -210,9 +225,11 @@ class AppController extends AbstractController
 
     /**
      * @param App $app
-     * @throws \Flownative\OAuth2\Client\OAuthClientException
-     * @throws \Neos\Flow\Http\Exception
-     * @throws \Neos\Flow\Mvc\Routing\Exception\MissingActionNameException
+     * @throws Exception
+     * @throws MissingActionNameException
+     * @throws OAuthClientException
+     * @throws StopActionException
+     * @throws UnsupportedRequestTypeException
      */
     public function refreshAuthorizationAction(App $app)
     {

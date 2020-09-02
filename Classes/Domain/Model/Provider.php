@@ -1,16 +1,16 @@
 <?php
 
-namespace Refactory\OAuth\Domain\Model;
+namespace CloudTomatoes\OAuth2\Domain\Model;
 
 /*
- * This file is part of the Refactory.OAuth package.
+ * This file is part of the CloudTomatoes.OAuth2 package.
  */
 
 use Neos\Flow\Annotations as Flow;
 use Doctrine\ORM\Mapping as ORM;
-use Refactory\OAuth\OAuthClients\AWSClient;
-use Refactory\OAuth\OAuthClients\AzureClient;
-use Refactory\OAuth\OAuthClients\GCPClient;
+use CloudTomatoes\OAuth2\OAuthClients\AWSClient;
+use CloudTomatoes\OAuth2\OAuthClients\AzureClient;
+use CloudTomatoes\OAuth2\OAuthClients\GCPClient;
 
 /**
  * @Flow\Entity

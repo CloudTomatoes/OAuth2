@@ -1,8 +1,8 @@
 <?php
-namespace Refactory\OAuth\Domain\Model;
+namespace CloudTomatoes\OAuth2\Domain\Model;
 
 /*
- * This file is part of the Refactory.OAuth package.
+ * This file is part of the CloudTomatoes.OAuth2 package.
  */
 
 use Neos\Flow\Annotations as Flow;
@@ -40,7 +40,7 @@ class App
     /**
      * @Flow\Validate(type="NotEmpty")
      * @ORM\ManyToOne()
-     * @var \Refactory\OAuth\Domain\Model\Provider
+     * @var \CloudTomatoes\OAuth2\Domain\Model\Provider
      */
     protected $provider;
 
@@ -127,7 +127,7 @@ class App
         $this->scope = $scope;
     }
     /**
-     * @return \Refactory\OAuth\Domain\Model\Provider
+     * @return \CloudTomatoes\OAuth2\Domain\Model\Provider
      */
     public function getProvider()
     {
@@ -135,7 +135,7 @@ class App
     }
 
     /**
-     * @param \Refactory\OAuth\Domain\Model\Provider $provider
+     * @param \CloudTomatoes\OAuth2\Domain\Model\Provider $provider
      * @return void
      */
     public function setProvider($provider)

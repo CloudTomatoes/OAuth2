@@ -1,5 +1,5 @@
 <?php
-namespace Refactory\OAuth\OAuthClients;
+namespace CloudTomatoes\OAuth2\OAuthClients;
 
 use Flownative\OAuth2\Client\OAuthClient;
 

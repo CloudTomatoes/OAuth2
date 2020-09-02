@@ -1,8 +1,8 @@
 <?php
-namespace Refactory\OAuth\Domain\Repository;
+namespace CloudTomatoes\OAuth2\Domain\Repository;
 
 /*
- * This file is part of the Refactory.OAuth package.
+ * This file is part of the CloudTomatoes.OAuth2 package.
  */
 
 use Neos\Flow\Annotations as Flow;

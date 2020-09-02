@@ -1,6 +1,6 @@
 <?php
 
-namespace Refactory\OAuth\OAuthClients;
+namespace CloudTomatoes\OAuth2\OAuthClients;
 
 use Doctrine\ORM\ORMException;
 use Flownative\OAuth2\Client\Authorization;
@@ -10,11 +10,11 @@ use League\OAuth2\Client\Provider\Google;
 use Neos\Cache\Exception;
 use Neos\Flow\Annotations as Flow;
 use Psr\Http\Message\UriInterface;
-use Refactory\OAuth\Domain\Model\Provider;
+use CloudTomatoes\OAuth2\Domain\Model\Provider;
 
 /**
  * Class GCPClient
- * @package Refactory\OAuth\OAuthClients
+ * @package CloudTomatoes\OAuth2\OAuthClients
  * @Flow\Scope("singleton")
  */
 class GCPClient extends AbstractClient

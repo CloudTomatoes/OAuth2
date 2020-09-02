@@ -1,4 +1,4 @@
-Refactory.OAuth |version| Documentation
+CloudTomatoes.OAuth2 |version| Documentation
 ==================================================================================================
 
 This documentation covering version |release| has been rendered at: |today|

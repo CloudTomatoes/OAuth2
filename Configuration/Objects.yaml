@@ -1,4 +1,4 @@
-Refactory\OAuth\OAuthClients\AbstractClient:
+CloudTomatoes\OAuth2\OAuthClients\AbstractClient:
   properties:
     stateCache:
       object:
@@ -7,7 +7,7 @@ Refactory\OAuth\OAuthClients\AbstractClient:
         arguments:
           1:
             value: Flownative_OAuth2_Client_State
-Refactory\OAuth\OAuthClients\GCPClient:
+CloudTomatoes\OAuth2\OAuthClients\GCPClient:
   properties:
     stateCache:
       object:
@@ -16,7 +16,7 @@ Refactory\OAuth\OAuthClients\GCPClient:
         arguments:
           1:
             value: Flownative_OAuth2_Client_State
-Refactory\OAuth\OAuthClients\AzureClient:
+CloudTomatoes\OAuth2\OAuthClients\AzureClient:
   properties:
     stateCache:
       object:

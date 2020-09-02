@@ -1,7 +1,7 @@
 {
     "description": "",
     "type": "neos-package",
-    "name": "refactory/oauth",
+    "name": "cloudtomatoes/oauth2",
     "repositories": [{
         "type": "git",
         "url": "git@github.com:hphoeksma/flow-oauth2-client.git"
@@ -14,12 +14,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Refactory\\OAuth\\": "Classes/"
+            "CloudTomatoes\\OAuth2\\": "Classes/"
         }
     },
     "extra": {
         "neos": {
-            "package-key": "Refactory.OAuth"
+            "package-key": "CloudTomatoes.OAuth2"
         }
     }
 }

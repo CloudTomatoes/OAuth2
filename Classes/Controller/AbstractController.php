@@ -1,5 +1,5 @@
 <?php
-namespace Refactory\OAuth\Controller;
+namespace CloudTomatoes\OAuth2\Controller;
 
 use Neos\Error\Messages\Message;
 use Neos\Flow\Mvc\Controller\ActionController;

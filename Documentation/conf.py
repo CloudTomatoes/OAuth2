@@ -50,7 +50,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Refactory.OAuth'
+project = u'CloudTomatoes.OAuth2'
 copyright = u'2020 and onwards by the authors'
 author = u'Author and Contributors'
 
@@ -214,7 +214,7 @@ html_static_path = ['_static']
 #html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'Refactory.OAuth'
+htmlhelp_basename = 'CloudTomatoes.OAuth2'
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -236,7 +236,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  (master_doc, 'Refactory.OAuth.tex', u'Refactory.OAuth Documentation',
+  (master_doc, 'CloudTomatoes.OAuth2.tex', u'CloudTomatoes.OAuth2 Documentation',
    u'The author', 'manual'),
 ]
 
@@ -266,7 +266,7 @@ latex_use_parts = True
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'Refactory.OAuth', u'Refactory.OAuth Documentation',
+    (master_doc, 'CloudTomatoes.OAuth2', u'CloudTomatoes.OAuth2 Documentation',
      [author], 1)
 ]
 
@@ -280,8 +280,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  (master_doc, 'Refactory.OAuth', u'Refactory.OAuth Documentation',
-   author, 'Refactory.OAuth', '',
+  (master_doc, 'CloudTomatoes.OAuth2', u'CloudTomatoes.OAuth2 Documentation',
+   author, 'CloudTomatoes.OAuth2', '',
    'Miscellaneous'),
 ]
 

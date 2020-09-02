@@ -1,11 +1,11 @@
 <?php
-namespace Refactory\OAuth\OAuthClients;
+namespace CloudTomatoes\OAuth2\OAuthClients;
 
 use GuzzleHttp\Psr7\Uri;
 use Neos\Flow\Http\HttpRequestHandlerInterface;
 use Neos\Flow\Mvc\ActionRequest;
 use Neos\Flow\Mvc\Routing\Exception\MissingActionNameException;
-use Refactory\OAuth\Domain\Model\Provider;
+use CloudTomatoes\OAuth2\Domain\Model\Provider;
 
 class AzureClient extends AbstractClient
 {

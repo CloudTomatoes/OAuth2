@@ -1,8 +1,8 @@
 <?php
-namespace Refactory\OAuth\Tests\Unit\Domain\Model;
+namespace CloudTomatoes\OAuth2\Tests\Unit\Domain\Model;
 
 /*
- * This file is part of the Refactory.OAuth package.
+ * This file is part of the CloudTomatoes.OAuth2 package.
  */
 
 /**

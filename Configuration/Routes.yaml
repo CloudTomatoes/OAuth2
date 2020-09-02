@@ -1,28 +1,28 @@
 -
-  name: 'Refactory OAuth - Povider Index route'
+  name: 'CloudTomatoes OAuth2 - Povider Index route'
   uriPattern: 'providers'
   defaults:
-    '@package':    'Refactory.OAuth'
+    '@package':    'CloudTomatoes.OAuth2'
     '@controller': 'Provider'
     '@action':     'index'
     '@format':     'html'
   appendExceedingArguments: true
 
 -
-  name: 'Refactory OAuth - Controllers route'
+  name: 'CloudTomatoes OAuth2 - Controllers route'
   uriPattern: '{@controller}s'
   defaults:
-    '@package':    'Refactory.OAuth'
+    '@package':    'CloudTomatoes.OAuth2'
     '@controller': 'App'
     '@action':     'index'
     '@format':     'html'
   appendExceedingArguments: true
 
 -
-  name: 'Refactory OAuth - Controller actions route'
+  name: 'CloudTomatoes OAuth2 - Controller actions route'
   uriPattern: '{@controller}s/{@action}'
   defaults:
-    '@package':    'Refactory.OAuth'
+    '@package':    'CloudTomatoes.OAuth2'
     '@controller': 'App'
     '@action':     'index'
     '@format':     'html'

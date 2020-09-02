@@ -1,5 +1,5 @@
 <?php
-namespace Refactory\OAuth\Service;
+namespace CloudTomatoes\OAuth2\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Flownative\OAuth2\Client\Authorization;
@@ -8,7 +8,7 @@ use Neos\Flow\Persistence\PersistenceManagerInterface;
 
 /**
  * Class AuthorizationService
- * @package Refactory\OAuth\Service
+ * @package CloudTomatoes\OAuth2\Service
  */
 class AuthorizationService {
     /**
