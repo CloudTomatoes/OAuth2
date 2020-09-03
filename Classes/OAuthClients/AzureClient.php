@@ -1,6 +1,7 @@
 <?php
 namespace CloudTomatoes\OAuth2\OAuthClients;
 
+use CloudTomatoes\OAuth2\Domain\Repository\ProviderRepository;
 use GuzzleHttp\Psr7\Uri;
 use Neos\Flow\Http\HttpRequestHandlerInterface;
 use Neos\Flow\Mvc\ActionRequest;
@@ -52,4 +53,20 @@ class AzureClient extends AbstractClient
         }
     }
 
+    /**
+     * Returns the OAuth service endpoint for authorizing a token.
+     * Override this method if needed.
+     *
+     * @return string
+     */
+    public function getAuthorizeTokenUri(): string
+    {
+        if ($this->app) {
+            $provider = $this->app->getProvider();
+        } else {
+            $providerRepository = $this->objectManager->get(ProviderRepository::class);
+            $provider = $providerRepository->findOneByOauthClient('CloudTomatoes\OAuth2\OAuthClients\AzureClient');
+        }
+        return trim($provider->getAuthenticationEndpoint(), '/') . '/authorize';
+    }
 }
