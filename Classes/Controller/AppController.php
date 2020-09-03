@@ -8,6 +8,7 @@ namespace CloudTomatoes\OAuth2\Controller;
 
 use Flownative\OAuth2\Client\OAuthClient;
 use Flownative\OAuth2\Client\OAuthClientException;
+use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Uri;
 use Neos\Flow\Annotations as Flow;
@@ -213,10 +214,14 @@ class AppController extends AbstractController
         }
 
         if ($expired === false) {
-            $result = $client->sendAuthenticatedRequest($authorization, $uri, $method, $body);
+            try {
+                $result = $client->sendAuthenticatedRequest($authorization, $uri, $method, $body);
+            } catch (ClientException $e) {
+                $queryResult = 'Response: ' . $e->getCode() . PHP_EOL . 'Request URI: ' . $e->getRequest()->getUri() . PHP_EOL . 'Result:' . PHP_EOL . json_encode(json_decode($e->getResponse()->getBody()->getContents()), JSON_PRETTY_PRINT);
+            }
             $this->redirect('show', null, null, [
                 'app' => $app,
-                'queryResult' => $result->getBody()->getContents(),
+                'queryResult' => isset($queryResult) ? $queryResult : json_encode(json_decode($result->getBody()->getContents()), JSON_PRETTY_PRINT),
                 'uri' => $uri,
                 'method' => $method
             ]);
