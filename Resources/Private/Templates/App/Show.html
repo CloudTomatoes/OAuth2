@@ -28,6 +28,12 @@
             <td>{app.scope}</td>
         </tr>
 
+        <f:if condition="{app.resource}">
+            <tr>
+                <th>Resource</th>
+                <td>{app.resource}</td>
+            </tr>
+        </f:if>
         <tr>
             <th>Provider</th>
             <td>{app.provider.name}</td>

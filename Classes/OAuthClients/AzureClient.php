@@ -2,11 +2,16 @@
 namespace CloudTomatoes\OAuth2\OAuthClients;
 
 use CloudTomatoes\OAuth2\Domain\Repository\ProviderRepository;
+use Doctrine\ORM\ORMException;
+use Flownative\OAuth2\Client\Authorization;
+use Flownative\OAuth2\Client\OAuthClientException;
 use GuzzleHttp\Psr7\Uri;
+use Neos\Cache\Exception;
 use Neos\Flow\Http\HttpRequestHandlerInterface;
 use Neos\Flow\Mvc\ActionRequest;
 use Neos\Flow\Mvc\Routing\Exception\MissingActionNameException;
 use CloudTomatoes\OAuth2\Domain\Model\Provider;
+use Psr\Http\Message\UriInterface;
 
 class AzureClient extends AbstractClient
 {
@@ -69,4 +74,57 @@ class AzureClient extends AbstractClient
         }
         return trim($provider->getAuthenticationEndpoint(), '/') . '/authorize';
     }
+
+    /**
+     * Start OAuth authorization with the Authorization Code flow
+     *
+     * @param string $clientId The client id, as provided by the OAuth server
+     * @param string $clientSecret The client secret, provided by the OAuth server
+     * @param UriInterface $returnToUri URI to return to when authorization is finished
+     * @param string $scope Scope to request for authorization. Must be scope ids separated by space, e.g. "openid profile email"
+     * @param string $resource
+     * @return UriInterface The URL the browser should redirect to, asking the user to authorize
+     * @throws OAuthClientException
+     */
+    public function startAuthorization(string $clientId, string $clientSecret, UriInterface $returnToUri, string $scope, string $resource = ''): UriInterface
+    {
+        $authorization = new Authorization($this->getServiceType(), $clientId, Authorization::GRANT_AUTHORIZATION_CODE, $scope);
+        $this->logger->info(sprintf('OAuth (%s): Starting authorization %s using client id "%s", a %s bytes long secret and scope "%s".', $this->getServiceType(), $authorization->getAuthorizationId(), $clientId, strlen($clientSecret), $scope));
+
+        try {
+            $oldAuthorization = $this->entityManager->find(Authorization::class, $authorization->getAuthorizationId());
+            if ($oldAuthorization !== null) {
+                $authorization = $oldAuthorization;
+            }
+            $authorization->setClientSecret($clientSecret);
+            $this->entityManager->persist($authorization);
+            $this->entityManager->flush();
+        } catch (ORMException $exception) {
+            throw new OAuthClientException(sprintf('OAuth (%s): Failed storing authorization in database: %s', $this->getServiceType(), $exception->getMessage()), 1568727133);
+        }
+
+        $oAuthProvider = $this->createOAuthProvider($clientId, $clientSecret);
+        $authorizationUri = new Uri($oAuthProvider->getAuthorizationUrl(['scope' => $scope, 'resource' => $resource]));
+
+        if ($clientId === $clientSecret) {
+            $this->logger->error(sprintf('OAuth (%s): Client ID and Client secret are the same! Please check your configuration.', $this->getServiceType()));
+        }
+
+        try {
+            $this->stateCache->set(
+                $oAuthProvider->getState(),
+                [
+                    'authorizationId' => $authorization->getAuthorizationId(),
+                    'clientId' => $clientId,
+                    'clientSecret' => $clientSecret,
+                    'returnToUri' => (string)$returnToUri
+                ]
+            );
+        } catch (Exception $exception) {
+            throw new OAuthClientException(sprintf('OAuth (%s): Failed setting cache entry for authorization: %s', $this->getServiceType(), $exception->getMessage()), 1560178858);
+        }
+
+        return $authorizationUri;
+    }
+
 }

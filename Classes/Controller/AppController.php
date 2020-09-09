@@ -84,6 +84,10 @@ class AppController extends AbstractController
         $this->view->assign('providers', $this->providerRepository->findAll());
     }
 
+    protected function initializeCreateAction() {
+        $this->arguments['newApp']->getPropertyMappingConfiguration()->allowProperties('provider');
+    }
+
     /**
      * @param App $newApp
      * @return void
@@ -106,6 +110,10 @@ class AppController extends AbstractController
     {
         $this->view->assign('providers', $this->providerRepository->findAll());
         $this->view->assign('app', $app);
+    }
+
+    protected function initializeUpdateAction() {
+        $this->arguments['app']->getPropertyMappingConfiguration()->allowProperties('provider');
     }
 
     /**
@@ -140,7 +148,11 @@ class AppController extends AbstractController
         /** @var OAuthClient $client */
         $client = new $clientClass($app);
         $returnUri = new Uri($this->uriBuilder->setCreateAbsoluteUri(true)->uriFor('finishAuthorization', ['app' => $app], 'App', 'CloudTomatoes.OAuth2', null));
-        $this->redirectToUri($client->startAuthorization($app->getClientId(), $app->getSecret(), $returnUri, $app->getScope()));
+        if ($clientClass === 'CloudTomatoes\OAuth2\OAuthClients\AzureClient') {
+            $this->redirectToUri($client->startAuthorization($app->getClientId(), $app->getSecret(), $returnUri, $app->getScope(), $app->getResource()));
+        } else {
+            $this->redirectToUri($client->startAuthorization($app->getClientId(), $app->getSecret(), $returnUri, $app->getScope()));
+        }
     }
 
     /**

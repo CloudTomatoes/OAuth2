@@ -15,12 +15,41 @@
         <label for="scope">Scope</label>
         <f:form.textfield property="scope" id="scope"/>
         <label for="provider">Provider</label>
-        <f:form.select property="provider" id="provider" options="{providers}" optionLabelField="name"
-                       prependOptionLabel="Select a provider"/>
+        <select name="app[provider]" id="provider">
+            <option>Select a provider</option>
+            <f:for each="{providers}" as="provider">
+                <f:if condition="{app.provider -> f:format.identifier()} == {provider -> f:format.identifier()}">
+                    <f:then>
+                        <option value="{provider -> f:format.identifier()}" data-oauthclient="{provider.oauthClient}" selected="selected">{provider.name}</option>
+                    </f:then>
+                    <f:else>
+                        <option value="{provider -> f:format.identifier()}" data-oauthclient="{provider.oauthClient}">{provider.name}</option>
+                    </f:else>
+                </f:if>
+            </f:for>
+        </select>
+        <div class="resource__container" style="display: none;">
+            <label for="resource">Resource</label>
+            <f:form.textfield property="resource" id="resource"/>
+        </div>
         <label for="apiUri">Api base url</label>
         <f:form.textfield property="apiUri" id="apiUri"/>
         <label for="notes.example">Example</label>
         <f:form.textfield property="notes.example" id="notes.example" />
         <f:form.submit value="Update"/>
     </f:form>
+    <script>
+        let provider = document.querySelector('#provider')
+        if (provider.options[provider.selectedIndex].dataset.oauthclient === 'CloudTomatoes\\OAuth2\\OAuthClients\\AzureClient' ) {
+            document.querySelector('.resource__container').style.display = 'grid'
+        }
+
+        provider.addEventListener('change', e => {
+            if (provider.options[provider.selectedIndex].dataset.oauthclient === 'CloudTomatoes\\OAuth2\\OAuthClients\\AzureClient' ) {
+                document.querySelector('.resource__container').style.display = 'grid'
+            } else {
+                document.querySelector('.resource__container').style.display = 'none'
+            }
+        })
+    </script>
 </f:section>

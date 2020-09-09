@@ -38,6 +38,11 @@ class App
     protected $scope;
 
     /**
+     * @var string
+     */
+    protected $resource;
+
+    /**
      * @Flow\Validate(type="NotEmpty")
      * @ORM\ManyToOne()
      * @var \CloudTomatoes\OAuth2\Domain\Model\Provider
@@ -189,5 +194,21 @@ class App
     public function setNotes(array $notes): void
     {
         $this->notes = $notes;
+    }
+
+    /**
+     * @return string
+     */
+    public function getResource(): string
+    {
+        return $this->resource;
+    }
+
+    /**
+     * @param string $resource
+     */
+    public function setResource(string $resource): void
+    {
+        $this->resource = $resource;
     }
 }
