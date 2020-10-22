@@ -9,6 +9,8 @@ use CloudTomatoes\OAuth2\Domain\Repository\ProviderRepository;
 
 abstract class AbstractClient extends OAuthClient
 {
+    // @Todo make it possible to use multiple applications with one provider (for azure that means a custom Authentication Endpoint)
+
     /**
      * @var App
      */
