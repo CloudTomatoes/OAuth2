@@ -10,7 +10,8 @@ use Neos\Flow\Persistence\PersistenceManagerInterface;
  * Class AuthorizationService
  * @package CloudTomatoes\OAuth2\Service
  */
-class AuthorizationService {
+class AuthorizationService
+{
     /**
      * @Flow\Inject
      * @var EntityManagerInterface
@@ -27,7 +28,8 @@ class AuthorizationService {
      * Removes the app-related authorization from the database
      * @param $authorizationId
      */
-    public function deleteAuthorization($authorizationId) {
+    public function deleteAuthorization($authorizationId)
+    {
         $authorization = $this->entityManager->find(Authorization::class, $authorizationId);
         if ($authorization instanceof Authorization) {
             $this->entityManager->remove($authorization);

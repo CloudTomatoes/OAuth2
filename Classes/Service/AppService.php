@@ -1,4 +1,5 @@
 <?php
+
 namespace CloudTomatoes\OAuth2\Service;
 
 use CloudTomatoes\OAuth2\Domain\Model\App;
@@ -7,7 +8,8 @@ use CloudTomatoes\OAuth2\OAuthClients\GCPClient;
 use GuzzleHttp\Exception\ClientException;
 use Neos\Flow\Annotations as Flow;
 
-class AppService {
+class AppService
+{
     /**
      * @Flow\Inject
      * @var AppRepository
@@ -31,7 +33,10 @@ class AppService {
      */
     public function sendAuthenticatedRequest(App $app, string $uri, $apiVersion = '2020-06-01', $method = null, array $body = [])
     {
-        if ($method === '' || $method === null) $method = 'GET';
+        // @Todo: set the default apiVersion to a configurable value
+        if ($method === '' || $method === null) {
+            $method = 'GET';
+        }
 
         $clientClass = $app->getProvider()->getOauthClient();
         /** @var GCPClient $client */
@@ -47,10 +52,44 @@ class AppService {
             try {
                 $result = $client->sendAuthenticatedRequest($authorization, sprintf('%s?api-version=%s', $uri, $apiVersion), $method, $body);
                 $resultArray = json_decode($result->getBody()->getContents(), true);
-                return isset($resultArray['value']) ? $resultArray['value'] : [];
-            } catch (ClientException $e) {
-                $queryResult = 'Response: ' . $e->getCode() . PHP_EOL . 'Request URI: ' . $e->getRequest()->getUri() . PHP_EOL . 'Result:' . PHP_EOL . json_encode(json_decode($e->getResponse()->getBody()->getContents()), JSON_PRETTY_PRINT);
+                // If multiple nodes, the contents we need is in 'value', in single nodes in root
+                return isset($resultArray['value']) ? $resultArray['value'] : $resultArray;
+            } catch (ClientException $exception) {
+                // @todo: improve (too procedural in writing, better response handling)
+                // @todo: make allowed versions configurable
+                echo 'Initial api version not found, trying the next...' . PHP_EOL;
+                $response = $exception->getResponse()->getBody()->getContents();
+                preg_match_all('/(2020-08-01|2019-06-01)/', $response, $matches);
+                $apiVersionToUse = $this->determineApiVersion($matches, $apiVersion);
+                if (!empty($matches)) {
+                    return self::sendAuthenticatedRequest($app, $uri, $apiVersionToUse, $method, $body);
+                } else {
+                    // If no versions found in the response let's give that back so we can add to the list.
+                    \Neos\Flow\var_dump($response);
+                }
             }
         }
+    }
+
+    /**
+     * Function to determine which api version to try after failure on the current api-version
+     *
+     * @param array $matches
+     * @param string $currentVersion
+     * @return string
+     */
+    private function determineApiVersion(array $matches, string $currentVersion): string
+    {
+        $matches = array_values(array_unique($matches[0]));
+        $allowedVersions = [];
+        for ($i = 0; $i < count($matches); $i++) {
+            $allowedVersions[] = $matches[$i];
+        }
+        if (array_search($currentVersion, $allowedVersions) !== false) {
+            $versionToReturn = $allowedVersions[array_search($currentVersion, $allowedVersions) + 1];
+        } else {
+            $versionToReturn = $allowedVersions[0];
+        }
+        return $versionToReturn;
     }
 }

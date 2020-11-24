@@ -28,7 +28,9 @@ abstract class AbstractClient extends OAuthClient
      */
     public function __construct($app)
     {
-        if ($app instanceof App) $this->app = $app;
+        if ($app instanceof App) {
+            $this->app = $app;
+        }
         $serviceName = $this->app ? $this->app->getName() : $app;
         parent::__construct($serviceName);
     }
@@ -103,5 +105,4 @@ abstract class AbstractClient extends OAuthClient
     {
         return $this->app->getClientId();
     }
-
 }

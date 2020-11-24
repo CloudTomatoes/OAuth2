@@ -84,7 +84,8 @@ class AppController extends AbstractController
         $this->view->assign('providers', $this->providerRepository->findAll());
     }
 
-    protected function initializeCreateAction() {
+    protected function initializeCreateAction()
+    {
         $this->arguments['newApp']->getPropertyMappingConfiguration()->allowProperties('provider');
     }
 
@@ -112,7 +113,8 @@ class AppController extends AbstractController
         $this->view->assign('app', $app);
     }
 
-    protected function initializeUpdateAction() {
+    protected function initializeUpdateAction()
+    {
         $this->arguments['app']->getPropertyMappingConfiguration()->allowProperties('provider');
     }
 
@@ -213,7 +215,9 @@ class AppController extends AbstractController
      */
     public function sendAuthenticatedRequestAction(App $app, $uri, $method = null, array $body = [])
     {
-        if ($method === '' || $method === null) $method = 'GET';
+        if ($method === '' || $method === null) {
+            $method = 'GET';
+        }
 
         $clientClass = $app->getProvider()->getOauthClient();
         /** @var GCPClient $client */
