@@ -24,6 +24,7 @@ class Provider
     ];
 
     /**
+     * @Flow\Identity()
      * @Flow\Validate(type="NotEmpty")
      * @var string
      */
@@ -36,7 +37,6 @@ class Provider
     protected $authenticationEndpoint;
 
     /**
-     * @Flow\Identity()
      * @Flow\Validate(type="NotEmpty")
      * @var string
      */

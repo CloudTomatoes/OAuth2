@@ -16,6 +16,12 @@ class AppService
      */
     protected $appRepository;
 
+    /**
+     * @var string
+     * @Flow\InjectConfiguration(package="CloudTomatoes.OAuth2", path="default.api.version")
+     */
+    protected $apiVersion;
+
     public function findByIdentifier(string $identifier): ?App
     {
         return $this->appRepository->findByIdentifier($identifier);
@@ -31,9 +37,12 @@ class AppService
      * @throws \Flownative\OAuth2\Client\OAuthClientException
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function sendAuthenticatedRequest(App $app, string $uri, $apiVersion = '2020-06-01', $method = null, array $body = [])
+    public function sendAuthenticatedRequest(App $app, string $uri, $apiVersion = null, $method = null, array $body = [])
     {
-        // @Todo: set the default apiVersion to a configurable value
+        if ($apiVersion === null) {
+            $apiVersion = $this->apiVersion;
+        }
+
         if ($method === '' || $method === null) {
             $method = 'GET';
         }
