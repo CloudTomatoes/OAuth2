@@ -45,6 +45,17 @@ class AppService
 
     /**
      * @param App $app
+     * @throws \Neos\Flow\Persistence\Exception
+     * @throws \Neos\Flow\Persistence\Exception\IllegalObjectTypeException
+     */
+    public function update(App $app): void
+    {
+        $this->appRepository->update($app);
+        $this->persistenceManager->persistAll();
+    }
+
+    /**
+     * @param App $app
      * @throws \Neos\Flow\Persistence\Exception\IllegalObjectTypeException
      */
     public function remove(App $app): void

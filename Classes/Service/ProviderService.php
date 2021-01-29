@@ -38,6 +38,17 @@ class ProviderService
 
     /**
      * @param Provider $provider
+     * @throws \Neos\Flow\Persistence\Exception
+     * @throws \Neos\Flow\Persistence\Exception\IllegalObjectTypeException
+     */
+    public function update(Provider $provider): void
+    {
+        $this->repository->update($provider);
+        $this->persistenceManager->persistAll();
+    }
+
+    /**
+     * @param Provider $provider
      * @throws \Neos\Flow\Persistence\Exception\IllegalObjectTypeException
      */
     public function remove(Provider $provider): void
