@@ -16,6 +16,7 @@ class App
 
     /**
      * @Flow\Validate(type="NotEmpty")
+     * @Flow\Identity()
      * @var string
      */
     protected $name;

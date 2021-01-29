@@ -7,7 +7,12 @@ use CloudTomatoes\OAuth2\Domain\Repository\AppRepository;
 use CloudTomatoes\OAuth2\OAuthClients\GCPClient;
 use GuzzleHttp\Exception\ClientException;
 use Neos\Flow\Annotations as Flow;
+use Neos\Flow\Persistence\Doctrine\PersistenceManager;
 
+/**
+ * Class AppService
+ * @package CloudTomatoes\OAuth2\Service
+ */
 class AppService
 {
     /**
@@ -22,9 +27,48 @@ class AppService
      */
     protected $apiVersion;
 
+    /**
+     * @var PersistenceManager
+     * @Flow\Inject
+     */
+    protected $persistenceManager;
+
+    /**
+     * @param App $app
+     * @throws \Neos\Flow\Persistence\Exception\IllegalObjectTypeException
+     */
+    public function create(App $app): void
+    {
+        $this->appRepository->add($app);
+        $this->persistenceManager->persistAll();
+    }
+
+    /**
+     * @param App $app
+     * @throws \Neos\Flow\Persistence\Exception\IllegalObjectTypeException
+     */
+    public function remove(App $app): void
+    {
+        $this->appRepository->remove($app);
+        $this->persistenceManager->persistAll();
+    }
+
+    /**
+     * @param string $identifier
+     * @return App|null
+     */
     public function findByIdentifier(string $identifier): ?App
     {
         return $this->appRepository->findByIdentifier($identifier);
+    }
+
+    /**
+     * @param string $name
+     * @return App|null
+     */
+    public function findByName(string $name): ?App
+    {
+        return $this->appRepository->findOneByName($name);
     }
 
     /**
