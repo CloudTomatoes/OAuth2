@@ -6,6 +6,7 @@ namespace CloudTomatoes\OAuth2\Controller;
  * This file is part of the CloudTomatoes.OAuth2 package.
  */
 
+use CloudTomatoes\OAuth2\Service\AppService;
 use Flownative\OAuth2\Client\OAuthClient;
 use Flownative\OAuth2\Client\OAuthClientException;
 use GuzzleHttp\Exception\ClientException;
@@ -44,6 +45,12 @@ class AppController extends AbstractController
      * @var AuthorizationService
      */
     protected $authorizationService;
+
+    /**
+     * @var AppService
+     * @Flow\Inject
+     */
+    protected $appService;
 
     /**
      * @return void
@@ -146,14 +153,10 @@ class AppController extends AbstractController
             $this->redirect('show', null, null, ['app' => $app]);
         }
 
-        $clientClass = $app->getProvider()->getOauthClient();
-        /** @var OAuthClient $client */
-        $client = new $clientClass($app);
-        $returnUri = new Uri($this->uriBuilder->setCreateAbsoluteUri(true)->uriFor('finishAuthorization', ['app' => $app], 'App', 'CloudTomatoes.OAuth2', null));
-        if ($clientClass === 'CloudTomatoes\OAuth2\OAuthClients\AzureClient') {
-            $this->redirectToUri($client->startAuthorization($app->getClientId(), $app->getSecret(), $returnUri, $app->getScope(), $app->getResource()));
-        } else {
-            $this->redirectToUri($client->startAuthorization($app->getClientId(), $app->getSecret(), $returnUri, $app->getScope()));
+        $redirectUri = $this->appService->authorize($app, $this->request);
+
+        if ($redirectUri) {
+            $this->redirectToUri($redirectUri);
         }
     }
 
@@ -168,9 +171,7 @@ class AppController extends AbstractController
         if (!$authorizationId) {
             $this->addFlashMessage('Something went wrong in the authentication part.');
         }
-        $app->setAuthorizationId($authorizationId);
-        $this->appRepository->update($app);
-        $this->persistenceManager->persistAll();
+        $this->appService->finishAuthorization($app, $authorizationId);
         $this->redirect('show', null, null, ['app' => $app]);
     }
 

@@ -5,8 +5,13 @@ namespace CloudTomatoes\OAuth2\Service;
 use CloudTomatoes\OAuth2\Domain\Model\App;
 use CloudTomatoes\OAuth2\Domain\Repository\AppRepository;
 use CloudTomatoes\OAuth2\OAuthClients\GCPClient;
+use Flownative\OAuth2\Client\OAuthClient;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Psr7\Uri;
 use Neos\Flow\Annotations as Flow;
+use Neos\Flow\Exception;
+use Neos\Flow\Mvc\ActionRequest;
+use Neos\Flow\Mvc\Routing\UriBuilder;
 use Neos\Flow\Persistence\Doctrine\PersistenceManager;
 
 /**
@@ -32,6 +37,12 @@ class AppService
      * @Flow\Inject
      */
     protected $persistenceManager;
+
+    /**
+     * @var UriBuilder
+     * @Flow\Inject
+     */
+    protected $uriBuilder;
 
     /**
      * @param App $app
@@ -80,6 +91,42 @@ class AppService
     public function findByName(string $name): ?App
     {
         return $this->appRepository->findOneByName($name);
+    }
+
+    /**
+     * @param App $app
+     * @param ActionRequest $request
+     * @return string The redirect uri
+     * @throws \Flownative\OAuth2\Client\OAuthClientException
+     */
+    public function authorize(App $app, ActionRequest $request, $controllerName = 'App', $packageKey = 'CloudTomatoes.OAuth2'): string
+    {
+        $clientClass = $app->getProvider()->getOauthClient();
+        /** @var OAuthClient $client */
+        $client = new $clientClass($app);
+        $uri = new UriBuilder();
+        $uri->setRequest($request);
+        $returnUri = new Uri($uri->setCreateAbsoluteUri(true)->uriFor('finishAuthorization', ['app' => $app], $controllerName, $packageKey, null));
+        if ($clientClass === 'CloudTomatoes\OAuth2\OAuthClients\AzureClient') {
+            return $client->startAuthorization($app->getClientId(), $app->getSecret(), $returnUri, $app->getScope(), $app->getResource());
+        } else {
+            return $client->startAuthorization($app->getClientId(), $app->getSecret(), $returnUri, $app->getScope());
+        }
+    }
+
+    /**
+     * @param App $app
+     * @param string $authorizationId
+     * @return bool
+     * @throws \Neos\Flow\Persistence\Exception
+     * @throws \Neos\Flow\Persistence\Exception\IllegalObjectTypeException
+     */
+    public function finishAuthorization(App $app, string $authorizationId)
+    {
+        $app->setAuthorizationId($authorizationId);
+        $this->appRepository->update($app);
+        $this->persistenceManager->persistAll();
+        return true;
     }
 
     /**
