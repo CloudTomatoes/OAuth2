@@ -71,6 +71,14 @@ class App
     /**
      * @return string
      */
+    public function getPersistenceObjectIdentifier()
+    {
+        return $this->Persistence_Object_Identifier;
+    }
+
+    /**
+     * @return string
+     */
     public function getName()
     {
         return $this->name;
