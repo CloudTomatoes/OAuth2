@@ -9,7 +9,6 @@ use Flownative\OAuth2\Client\OAuthClient;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Uri;
 use Neos\Flow\Annotations as Flow;
-use Neos\Flow\Exception;
 use Neos\Flow\Mvc\ActionRequest;
 use Neos\Flow\Mvc\Routing\UriBuilder;
 use Neos\Flow\Persistence\Doctrine\PersistenceManager;
@@ -28,9 +27,15 @@ class AppService
 
     /**
      * @var string
-     * @Flow\InjectConfiguration(package="CloudTomatoes.OAuth2", path="default.api.version")
+     * @Flow\InjectConfiguration(package="CloudTomatoes.OAuth2", path="apiVersion.default")
      */
     protected $apiVersion;
+
+    /**
+     * @var array
+     * @Flow\InjectConfiguration(package="CloudTomatoes.OAuth2", path="apiVersion.allowed")
+     */
+    protected $allowedVersions;
 
     /**
      * @var PersistenceManager
@@ -166,17 +171,15 @@ class AppService
                 // If multiple nodes, the contents we need is in 'value', in single nodes in root
                 return isset($resultArray['value']) ? $resultArray['value'] : $resultArray;
             } catch (ClientException $exception) {
-                // @todo: improve (too procedural in writing, better response handling)
-                // @todo: make allowed versions configurable
-                echo 'Initial api version not found, trying the next...' . PHP_EOL;
                 $response = $exception->getResponse()->getBody()->getContents();
-                preg_match_all('/(2020-08-01|2019-06-01)/', $response, $matches);
-                $apiVersionToUse = $this->determineApiVersion($matches, $apiVersion);
+                preg_match_all('/(' . implode('|', $this->allowedVersions) . ')/', $response, $matches);
+                $apiVersionToUse = $this->determineApiVersion($matches, $apiVersion, $response);
                 if (!empty($matches)) {
                     return self::sendAuthenticatedRequest($app, $uri, $apiVersionToUse, $method, $body);
                 } else {
                     // If no versions found in the response let's give that back so we can add to the list.
-                    \Neos\Flow\var_dump($response);
+                    // @Todo implement auto adding of the version or alerting development by using Sentry or the like
+                    throw new \Cloud\Core\Exception($exception->getResponse()->getBody()->getContents());
                 }
             }
         }
@@ -189,9 +192,14 @@ class AppService
      * @param string $currentVersion
      * @return string
      */
-    private function determineApiVersion(array $matches, string $currentVersion): string
+    private function determineApiVersion(array $matches, string $currentVersion, string $response): string
     {
         $matches = array_values(array_unique($matches[0]));
+        foreach ($matches as $k => $v) {
+            if (substr($v, -strlen('-preview')) === '-preview') {
+                unset($matches[$k]);
+            }
+        }
         $allowedVersions = [];
         for ($i = 0; $i < count($matches); $i++) {
             $allowedVersions[] = $matches[$i];
@@ -199,7 +207,12 @@ class AppService
         if (array_search($currentVersion, $allowedVersions) !== false) {
             $versionToReturn = $allowedVersions[array_search($currentVersion, $allowedVersions) + 1];
         } else {
-            $versionToReturn = $allowedVersions[0];
+//            Leaving this here for debug purposes, once stable can be removed.
+//            \Neos\Flow\var_dump($matches, 'Matches');
+//            \Neos\Flow\var_dump($currentVersion, 'Current Version');
+//            \Neos\Flow\var_dump($response, 'Response');
+//            \Neos\Flow\var_dump($allowedVersions, 'Allowed Versions');die();
+            $versionToReturn = !empty($allowedVersions) ? $allowedVersions[0] : '';
         }
         return $versionToReturn;
     }
