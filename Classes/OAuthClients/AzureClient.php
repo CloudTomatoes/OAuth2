@@ -126,5 +126,4 @@ class AzureClient extends AbstractClient
 
         return $authorizationUri;
     }
-
 }

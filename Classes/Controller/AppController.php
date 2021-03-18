@@ -11,7 +11,6 @@ use Flownative\OAuth2\Client\OAuthClient;
 use Flownative\OAuth2\Client\OAuthClientException;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Psr7\Uri;
 use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Http\Exception;
 use Neos\Flow\Mvc\Exception\NoSuchArgumentException;
@@ -23,7 +22,6 @@ use CloudTomatoes\OAuth2\Domain\Model\App;
 use CloudTomatoes\OAuth2\Domain\Repository\AppRepository;
 use CloudTomatoes\OAuth2\Domain\Repository\ProviderRepository;
 use CloudTomatoes\OAuth2\OAuthClients\GCPClient;
-use CloudTomatoes\OAuth2\Service\AuthorizationService;
 
 class AppController extends AbstractController
 {
@@ -39,12 +37,6 @@ class AppController extends AbstractController
      * @var ProviderRepository
      */
     protected $providerRepository;
-
-    /**
-     * @Flow\Inject()
-     * @var AuthorizationService
-     */
-    protected $authorizationService;
 
     /**
      * @var AppService
@@ -186,8 +178,7 @@ class AppController extends AbstractController
     {
         // Clean up the authorization
         $this->addFlashMessage("Deleted the app {$app->getName()}");
-        $this->authorizationService->deleteAuthorization($app->getAuthorizationId());
-        $this->appRepository->remove($app);
+        $this->appService->remove($app);
         $this->redirect('index');
     }
 
@@ -198,10 +189,7 @@ class AppController extends AbstractController
      */
     public function deAuthorizeAction(App $app)
     {
-        $this->authorizationService->deleteAuthorization($app->getAuthorizationId());
-        $app->setAuthorizationId('');
-        $this->appRepository->update($app);
-        $this->persistenceManager->persistAll();
+        $this->appService->disconnect($app);
         $this->redirect('show', null, null, ['app' => $app]);
     }
 

@@ -15,7 +15,6 @@ use Neos\Flow\Persistence\Repository;
  */
 class AppRepository extends Repository
 {
-
     public function findByIdentifier($identifier): ?App
     {
         return parent::findByIdentifier($identifier);

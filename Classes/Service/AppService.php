@@ -50,6 +50,12 @@ class AppService
     protected $uriBuilder;
 
     /**
+     * @var AuthorizationService
+     * @Flow\Inject
+     */
+    protected $authorizationService;
+
+    /**
      * @param App $app
      * @throws \Neos\Flow\Persistence\Exception\IllegalObjectTypeException
      */
@@ -76,6 +82,7 @@ class AppService
      */
     public function remove(App $app): void
     {
+        $this->authorizationService->deleteAuthorization($app->getAuthorizationId());
         $this->appRepository->remove($app);
         $this->persistenceManager->persistAll();
     }
@@ -183,6 +190,21 @@ class AppService
                 }
             }
         }
+    }
+
+    /**
+     * De-authorize application
+     *
+     * @param App $app
+     * @throws \Neos\Flow\Persistence\Exception
+     * @throws \Neos\Flow\Persistence\Exception\IllegalObjectTypeException
+     */
+    public function disconnect(App $app)
+    {
+        $this->authorizationService->deleteAuthorization($app->getAuthorizationId());
+        $app->setAuthorizationId('');
+        $this->appRepository->update($app);
+        $this->persistenceManager->persistAll();
     }
 
     /**
