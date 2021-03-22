@@ -1,9 +1,3 @@
-Neos:
-  Flow:
-    mvc:
-      routes:
-        'CloudTomatoes.OAuth2':
-          position: 'start'
 Flownative:
   OAuth2:
     Client:

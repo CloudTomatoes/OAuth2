@@ -1,0 +1,6 @@
+Neos:
+  Flow:
+    mvc:
+      routes:
+        'CloudTomatoes.OAuth2':
+          position: 'start'
