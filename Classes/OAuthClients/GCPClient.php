@@ -6,6 +6,7 @@ use Doctrine\ORM\ORMException;
 use Flownative\OAuth2\Client\Authorization;
 use Flownative\OAuth2\Client\OAuthClientException;
 use GuzzleHttp\Psr7\Uri;
+use League\OAuth2\Client\Provider\GenericProvider;
 use League\OAuth2\Client\Provider\Google;
 use Neos\Cache\Exception;
 use Neos\Flow\Annotations as Flow;
@@ -33,7 +34,7 @@ class GCPClient extends AbstractClient
      * @param string $clientSecret
      * @return Google
      */
-    protected function createOAuthProvider(string $clientId, string $clientSecret)
+    protected function createOAuthProvider(string $clientId, string $clientSecret): GenericProvider
     {
         return new Google([
             'clientId' => $clientId,
