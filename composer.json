@@ -8,7 +8,7 @@
     }],
     "require": {
         "neos/flow": "*",
-        "flownative/oauth2-client": "dev-develop",
+        "flownative/oauth2-client": "*",
         "league/oauth2-google": "^3.0",
         "google/apiclient": "^2.6"
     },
