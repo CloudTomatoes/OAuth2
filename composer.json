@@ -25,7 +25,8 @@
         },
         "applied-flow-migrations": [
             "Neos.Party-20161124225257",
-            "Neos.SwiftMailer-20161130105617"
+            "Neos.SwiftMailer-20161130105617",
+            "Neos.Flow-20180415105700"
         ]
     }
 }
