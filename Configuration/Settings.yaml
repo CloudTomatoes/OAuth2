@@ -1,6 +1,9 @@
 Flownative:
   OAuth2:
     Client:
+      token:
+        # default lifetime of new tokens in seconds, null = never
+        defaultLifetime: null
       services:
         #GCP
         - name: 'google-cloud-platform'

@@ -88,7 +88,8 @@ class AzureClient extends AbstractClient
      */
     public function startAuthorization(string $clientId, string $clientSecret, UriInterface $returnToUri, string $scope, string $resource = ''): UriInterface
     {
-        $authorization = new Authorization($this->getServiceType(), $clientId, Authorization::GRANT_AUTHORIZATION_CODE, $scope);
+        $authorizationId = Authorization::generateAuthorizationIdForAuthorizationCodeGrant($this->getServiceType(), $this->getServiceName(), $clientId);
+        $authorization = new Authorization($authorizationId, $this->getServiceType(), $clientId, Authorization::GRANT_AUTHORIZATION_CODE, $scope);
         $this->logger->info(sprintf('OAuth (%s): Starting authorization %s using client id "%s", a %s bytes long secret and scope "%s".', $this->getServiceType(), $authorization->getAuthorizationId(), $clientId, strlen($clientSecret), $scope));
 
         try {
@@ -96,7 +97,6 @@ class AzureClient extends AbstractClient
             if ($oldAuthorization !== null) {
                 $authorization = $oldAuthorization;
             }
-            $authorization->setClientSecret($clientSecret);
             $this->entityManager->persist($authorization);
             $this->entityManager->flush();
         } catch (ORMException $exception) {

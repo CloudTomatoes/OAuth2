@@ -12,6 +12,7 @@ use Neos\Flow\ObjectManagement\ObjectManagerInterface;
 use CloudTomatoes\OAuth2\Domain\Model\App;
 use Neos\Flow\Annotations as Flow;
 use CloudTomatoes\OAuth2\Domain\Repository\ProviderRepository;
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\UriInterface;
 
 abstract class AbstractClient extends OAuthClient
@@ -115,6 +116,14 @@ abstract class AbstractClient extends OAuthClient
     }
 
     /**
+     * @return string
+     */
+    public function getSecret(): string
+    {
+        return $this->app->getSecret();
+    }
+
+    /**
      * Finish an OAuth authorization with the Authorization Code flow
      *
      * @param string $stateIdentifier The state identifier, passed back by the OAuth server as the "state" parameter
@@ -161,9 +170,75 @@ abstract class AbstractClient extends OAuthClient
         }
 
         $returnToUri = new Uri($stateFromCache['returnToUri']);
-        $returnToUri = $returnToUri->withQuery(trim($returnToUri->getQuery() . '&' . self::AUTHORIZATION_ID_QUERY_PARAMETER_NAME . '=' . $authorizationId, '&'));
+        $returnToUri = $returnToUri->withQuery(trim($returnToUri->getQuery() . '&' . self::AUTHORIZATION_ID_QUERY_PARAMETER_NAME_PREFIX . '=' . $authorizationId, '&'));
 
         $this->logger->debug(sprintf('OAuth (%s): Finished authorization "%s", $returnToUri is %s.', $this->getServiceType(), $authorizationId, $returnToUri));
+        return $returnToUri;
+    }
+
+    /**
+     * Returns a prepared request to an OAuth 2.0 service provider using Bearer token authentication
+     *
+     * @param Authorization $authorization
+     * @param string $relativeUri A relative URI of the web server, prepended by the base URI
+     * @param string $method The HTTP method, for example "GET" or "POST"
+     * @param array $bodyFields Associative array of body fields to send (optional)
+     * @return RequestInterface
+     * @throws OAuthClientException
+     */
+    public function getAuthenticatedRequest(Authorization $authorization, string $relativeUri, string $method = 'GET', array $bodyFields = []): RequestInterface
+    {
+        $accessToken = $authorization->getAccessToken();
+        if ($accessToken === null) {
+            throw new OAuthClientException(sprintf($this->getServiceType() . 'Failed getting an authenticated request for client ID "%s" because the authorization contained no access token', $authorization->getClientId()), 1589300319);
+        }
+
+        $oAuthProvider = $this->createOAuthProvider($authorization->getClientId(), $this->getSecret());
+        return $oAuthProvider->getAuthenticatedRequest(
+            $method,
+            $this->getBaseUri() . $relativeUri,
+            $authorization->getAccessToken(),
+            [
+                'headers' => [
+                    'Content-Type' => 'application/json'
+                ],
+                'body' => ($bodyFields !== [] ? \GuzzleHttp\json_encode($bodyFields) : '')
+            ]
+        );
+    }
+
+    /**
+     * Refresh an OAuth authorization
+     *
+     * @param string $authorizationId
+     * @param string $clientId
+     * @param string $returnToUri
+     * @return string
+     * @throws OAuthClientException
+     */
+    public function refreshAuthorization(string $authorizationId, string $clientId, string $returnToUri): string
+    {
+        $authorization = $this->entityManager->find(Authorization::class, ['authorizationId' => $authorizationId]);
+        if (!$authorization instanceof Authorization) {
+            throw new OAuthClientException(sprintf('OAuth2: Could not refresh OAuth token because authorization %s was not found in our database.', $authorization), 1505317044316);
+        }
+        $oAuthProvider = $this->createOAuthProvider($clientId, $this->getSecret());
+
+        $this->logger->info(sprintf('OAuth (%s): Refreshing authorization %s for client "%s" using a %s bytes long secret and refresh token "%s".', $this->getServiceType(), $authorizationId, $clientId, strlen($this->getSecret()), $authorization->getAccessToken()->getRefreshToken()));
+
+        try {
+            $accessToken = $oAuthProvider->getAccessToken('refresh_token', ['refresh_token' => $authorization->getAccessToken()->getRefreshToken()]);
+            $authorization->accessToken = $accessToken->getToken();
+            $authorization->setExpires($accessToken->getExpires() ? \DateTimeImmutable::createFromFormat('U', $accessToken->getExpires()) : null);
+
+            $this->logger->debug(sprintf($this->getServiceType() . ': New access token is "%s", refresh token is "%s".', $authorization->accessToken, $authorization->getAccessToken()->getRefreshToken()));
+
+            $this->entityManager->persist($authorization);
+            $this->entityManager->flush();
+        } catch (IdentityProviderException $exception) {
+            throw new OAuthClientException($exception->getMessage(), 1511187196454, $exception);
+        }
+
         return $returnToUri;
     }
 }

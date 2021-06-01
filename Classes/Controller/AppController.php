@@ -6,6 +6,7 @@ namespace CloudTomatoes\OAuth2\Controller;
  * This file is part of the CloudTomatoes.OAuth2 package.
  */
 
+use CloudTomatoes\OAuth2\OAuthClients\AbstractClient;
 use CloudTomatoes\OAuth2\Service\AppService;
 use Flownative\OAuth2\Client\OAuthClient;
 use Flownative\OAuth2\Client\OAuthClientException;
@@ -209,7 +210,7 @@ class AppController extends AbstractController
         }
 
         $clientClass = $app->getProvider()->getOauthClient();
-        /** @var GCPClient $client */
+        /** @var AbstractClient $client */
         $client = new $clientClass($app);
         $authorization = $client->getAuthorization($app->getAuthorizationId());
         $expired = $authorization->getAccessToken()->hasExpired();
