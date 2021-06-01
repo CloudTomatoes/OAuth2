@@ -2,10 +2,12 @@
     "description": "",
     "type": "neos-package",
     "name": "cloudtomatoes/oauth2",
-    "repositories": [{
-        "type": "git",
-        "url": "git@github.com:hphoeksma/flow-oauth2-client.git"
-    }],
+    "repositories": [
+        {
+            "type": "git",
+            "url": "git@github.com:hphoeksma/flow-oauth2-client.git"
+        }
+    ],
     "require": {
         "neos/flow": "*",
         "flownative/oauth2-client": "*",
@@ -20,6 +22,9 @@
     "extra": {
         "neos": {
             "package-key": "CloudTomatoes.OAuth2"
-        }
+        },
+        "applied-flow-migrations": [
+            "Neos.Party-20161124225257"
+        ]
     }
 }
