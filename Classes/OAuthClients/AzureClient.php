@@ -35,7 +35,7 @@ class AzureClient extends AbstractClient
     {
         $currentRequestHandler = $this->bootstrap->getActiveRequestHandler();
         if ($currentRequestHandler instanceof HttpRequestHandlerInterface) {
-            $httpRequest = $currentRequestHandler->getComponentContext()->getHttpRequest();
+            $httpRequest = $currentRequestHandler->getHttpRequest();
         } else {
             putenv('FLOW_REWRITEURLS=1');
             $httpRequest = $this->serverRequestFactory->createServerRequest('GET', new Uri($this->flowBaseUriSetting));
