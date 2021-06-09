@@ -164,7 +164,6 @@ abstract class AbstractClient extends OAuthClient
             $authorization->setScope($scope);
             $this->entityManager->persist($authorization);
             $this->entityManager->flush();
-
         } catch (IdentityProviderException $exception) {
             throw new OAuthClientException($exception->getMessage() . ' ' . $exception->getResponseBody()['error_description'], 1511187001671, $exception);
         }
@@ -192,7 +191,6 @@ abstract class AbstractClient extends OAuthClient
         if ($accessToken === null) {
             throw new OAuthClientException(sprintf($this->getServiceType() . 'Failed getting an authenticated request for client ID "%s" because the authorization contained no access token', $authorization->getClientId()), 1589300319);
         }
-
         $oAuthProvider = $this->createOAuthProvider($authorization->getClientId(), $this->getSecret());
         return $oAuthProvider->getAuthenticatedRequest(
             $method,
@@ -223,15 +221,13 @@ abstract class AbstractClient extends OAuthClient
             throw new OAuthClientException(sprintf('OAuth2: Could not refresh OAuth token because authorization %s was not found in our database.', $authorization), 1505317044316);
         }
         $oAuthProvider = $this->createOAuthProvider($clientId, $this->getSecret());
-
         $this->logger->info(sprintf('OAuth (%s): Refreshing authorization %s for client "%s" using a %s bytes long secret and refresh token "%s".', $this->getServiceType(), $authorizationId, $clientId, strlen($this->getSecret()), $authorization->getAccessToken()->getRefreshToken()));
 
         try {
             $accessToken = $oAuthProvider->getAccessToken('refresh_token', ['refresh_token' => $authorization->getAccessToken()->getRefreshToken()]);
-            $authorization->accessToken = $accessToken->getToken();
+            $authorization->setAccessToken($accessToken);
             $authorization->setExpires($accessToken->getExpires() ? \DateTimeImmutable::createFromFormat('U', $accessToken->getExpires()) : null);
-
-            $this->logger->debug(sprintf($this->getServiceType() . ': New access token is "%s", refresh token is "%s".', $authorization->accessToken, $authorization->getAccessToken()->getRefreshToken()));
+            $this->logger->debug(sprintf($this->getServiceType() . ': New access token is "%s", refresh token is "%s".', $authorization->getAccessToken()->getToken(), $authorization->getAccessToken()->getRefreshToken()));
 
             $this->entityManager->persist($authorization);
             $this->entityManager->flush();

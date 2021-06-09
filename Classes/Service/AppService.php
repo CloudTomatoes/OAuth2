@@ -4,7 +4,7 @@ namespace CloudTomatoes\OAuth2\Service;
 
 use CloudTomatoes\OAuth2\Domain\Model\App;
 use CloudTomatoes\OAuth2\Domain\Repository\AppRepository;
-use CloudTomatoes\OAuth2\OAuthClients\GCPClient;
+use CloudTomatoes\OAuth2\OAuthClients\AbstractClient;
 use Flownative\OAuth2\Client\OAuthClient;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Uri;
@@ -162,7 +162,7 @@ class AppService
         }
 
         $clientClass = $app->getProvider()->getOauthClient();
-        /** @var GCPClient $client */
+        /** @var AbstractClient $client */
         $client = new $clientClass($app);
         $authorization = $client->getAuthorization($app->getAuthorizationId());
         $expired = $authorization->getAccessToken()->hasExpired();
