@@ -178,16 +178,23 @@ class AppService
                 // If multiple nodes, the contents we need is in 'value', in single nodes in root
                 return isset($resultArray['value']) ? $resultArray['value'] : $resultArray;
             } catch (ClientException $exception) {
-                $response = $exception->getResponse()->getBody()->getContents();
-                preg_match_all('/(' . implode('|', $this->allowedVersions) . ')/', $response, $matches);
-                $apiVersionToUse = $this->determineApiVersion($matches, $apiVersion, $response);
-                if (!empty($matches)) {
-                    return self::sendAuthenticatedRequest($app, $uri, $apiVersionToUse, $method, $body);
+                // @todo provide proper feedback for other errors
+                if ($exception->getCode() === 404) {
+                    return 'ResourceNotFound';
                 } else {
-                    // If no versions found in the response let's give that back so we can add to the list.
-                    // @Todo implement auto adding of the version or alerting development by using Sentry or the like
-                    throw new \Cloud\Core\Exception($exception->getResponse()->getBody()->getContents());
+                    $response = $exception->getResponse()->getBody()->getContents();
+                    \Neos\Flow\var_dump($exception, $uri); // Leave here temporary until the todo from line 181 is fixed
+                    preg_match_all('/(' . implode('|', $this->allowedVersions) . ')/', $response, $matches);
+                    $apiVersionToUse = $this->determineApiVersion($matches, $apiVersion, $response);
+                    if (!empty($matches)) {
+                        return self::sendAuthenticatedRequest($app, $uri, $apiVersionToUse, $method, $body);
+                    } else {
+                        // If no versions found in the response let's give that back so we can add to the list.
+                        // @Todo implement auto adding of the version or alerting development by using Sentry or the like
+                        throw new \Cloud\Core\Exception($exception->getResponse()->getBody()->getContents());
+                    }
                 }
+
             }
         }
     }
