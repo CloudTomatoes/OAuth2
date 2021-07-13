@@ -194,7 +194,6 @@ class AppService
                         throw new \Cloud\Core\Exception($exception->getResponse()->getBody()->getContents());
                     }
                 }
-
             }
         }
     }
