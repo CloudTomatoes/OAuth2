@@ -19,8 +19,7 @@ class Provider
 {
     const OAUTH_CLIENTS = [
         GCPClient::class => 'google',
-        AzureClient::class => 'azure',
-        AWSClient::class => 'amazon'
+        AzureClient::class => 'azure'
     ];
 
     /**

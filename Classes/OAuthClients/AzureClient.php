@@ -20,7 +20,7 @@ class AzureClient extends AbstractClient
      *
      * @return string For example, "FlownativeBeach", "oidc", ...
      */
-    public function getServiceType(): string
+    public static function getServiceType(): string
     {
         return Provider::OAUTH_CLIENTS[AzureClient::class];
     }
