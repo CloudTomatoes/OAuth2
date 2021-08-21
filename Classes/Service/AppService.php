@@ -2,6 +2,7 @@
 
 namespace CloudTomatoes\OAuth2\Service;
 
+use Azure\Module\Exception\NoRegisteredProviderFoundException;
 use CloudTomatoes\OAuth2\Domain\Model\App;
 use CloudTomatoes\OAuth2\Domain\Repository\AppRepository;
 use CloudTomatoes\OAuth2\OAuthClients\AbstractClient;
@@ -24,18 +25,6 @@ class AppService
      * @var AppRepository
      */
     protected $appRepository;
-
-    /**
-     * @var string
-     * @Flow\InjectConfiguration(package="CloudTomatoes.OAuth2", path="apiVersion.default")
-     */
-    protected $apiVersion;
-
-    /**
-     * @var array
-     * @Flow\InjectConfiguration(package="CloudTomatoes.OAuth2", path="apiVersion.allowed")
-     */
-    protected $allowedVersions;
 
     /**
      * @var PersistenceManager
@@ -151,12 +140,8 @@ class AppService
      * @throws \Flownative\OAuth2\Client\OAuthClientException
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function sendAuthenticatedRequest(App $app, string $uri, $apiVersion = null, $method = null, array $body = [])
+    public function sendAuthenticatedRequest(App $app, string $uri, string $apiVersion, $method = null, array $body = [])
     {
-        if ($apiVersion === null) {
-            $apiVersion = $this->apiVersion;
-        }
-
         if ($method === '' || $method === null) {
             $method = 'GET';
         }
@@ -181,18 +166,12 @@ class AppService
                 // @todo provide proper feedback for other errors
                 if ($exception->getCode() === 404) {
                     return 'ResourceNotFound';
+                } else if ($exception->getCode() === 400) {
+                    \Neos\Flow\var_dump([$uri, $apiVersion ], 'code 400');
+                    return json_decode($exception->getResponse()->getBody()->getContents(), true);
                 } else {
                     $response = $exception->getResponse()->getBody()->getContents();
                     \Neos\Flow\var_dump($exception, $uri); // Leave here temporary until the todo from line 181 is fixed
-                    preg_match_all('/(' . implode('|', $this->allowedVersions) . ')/', $response, $matches);
-                    $apiVersionToUse = $this->determineApiVersion($matches, $apiVersion, $response);
-                    if (!empty($matches)) {
-                        return self::sendAuthenticatedRequest($app, $uri, $apiVersionToUse, $method, $body);
-                    } else {
-                        // If no versions found in the response let's give that back so we can add to the list.
-                        // @Todo implement auto adding of the version or alerting development by using Sentry or the like
-                        throw new \Cloud\Core\Exception($exception->getResponse()->getBody()->getContents());
-                    }
                 }
             }
         }
@@ -211,37 +190,5 @@ class AppService
         $app->setAuthorizationId('');
         $this->appRepository->update($app);
         $this->persistenceManager->persistAll();
-    }
-
-    /**
-     * Function to determine which api version to try after failure on the current api-version
-     *
-     * @param array $matches
-     * @param string $currentVersion
-     * @return string
-     */
-    private function determineApiVersion(array $matches, string $currentVersion, string $response): string
-    {
-        $matches = array_values(array_unique($matches[0]));
-        foreach ($matches as $k => $v) {
-            if (substr($v, -strlen('-preview')) === '-preview') {
-                unset($matches[$k]);
-            }
-        }
-        $allowedVersions = [];
-        for ($i = 0; $i < count($matches); $i++) {
-            $allowedVersions[] = $matches[$i];
-        }
-        if (array_search($currentVersion, $allowedVersions) !== false) {
-            $versionToReturn = $allowedVersions[array_search($currentVersion, $allowedVersions) + 1];
-        } else {
-//            Leaving this here for debug purposes, once stable can be removed.
-//            \Neos\Flow\var_dump($matches, 'Matches');
-//            \Neos\Flow\var_dump($currentVersion, 'Current Version');
-//            \Neos\Flow\var_dump($response, 'Response');
-//            \Neos\Flow\var_dump($allowedVersions, 'Allowed Versions');die();
-            $versionToReturn = !empty($allowedVersions) ? $allowedVersions[0] : '';
-        }
-        return $versionToReturn;
     }
 }

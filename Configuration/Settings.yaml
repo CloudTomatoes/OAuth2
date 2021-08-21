@@ -8,14 +8,3 @@ Flownative:
         #GCP
         - name: 'google-cloud-platform'
           className: 'CloudTomatoes\OAuth2\OAuthServices\GCPClient'
-CloudTomatoes:
-  OAuth2:
-    apiVersion:
-      default: '2020-06-01'
-      allowed:
-        - '2021-01-01'
-        - '2020-08-01'
-        - '2020-06-01'
-        - '2019-07-01'
-        - '2019-06-01'
-        - '2018-05-01'
